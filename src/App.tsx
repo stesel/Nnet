@@ -1,22 +1,33 @@
-import * as React from 'react';
-import './App.css';
+import * as React from "react";
 
-const logo = require('./logo.svg');
+const appStyle: React.CSSProperties = {
+  "text-align": "center"
+};
 
-class App extends React.Component {
-  render() {
+const appHeaderStyle: React.CSSProperties = {
+  "background-color": "#222",
+  height: "100%",
+  padding: "20px",
+  color: "white",
+  "margin-bottom": "20px"
+};
+
+const contentStyle: React.CSSProperties = {
+  border: "2px solid black",
+  padding: "8px"
+};
+
+export class App extends React.PureComponent {
+  public render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
+      <div style={appStyle}>
+        <header style={appHeaderStyle}>Nnet</header>
+        {this.content()}
       </div>
     );
   }
-}
 
-export default App;
+  private content = () => {
+    return <div style={contentStyle}>CONTENT</div>;
+  };
+}
