@@ -9,6 +9,11 @@ type Point = Readonly<{
 
 type Team = -1 | 1;
 
+type Example = Readonly<{
+  point: Point;
+  team: Team;
+}>;
+
 const MAX_X = 400;
 const MAX_Y = 400;
 
@@ -39,7 +44,7 @@ const guess = (weights: Point, point: Point) => {
   return team;
 };
 
-const team = (point: Point) => (point.x > point.y ? 1 : -1);
+const team = (point: Point): Team => (point.x > point.y ? 1 : -1);
 
 const train = (weights: Point, point: Point, team: Team) => {
   const guessResult = guess(weights, point); // 1
@@ -50,6 +55,18 @@ const train = (weights: Point, point: Point, team: Team) => {
   };
   return correlation;
 };
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+function* stoper(stops: number) {
+  yield stops++;
+}
+
+const generatePoints = (): Point[] =>
+  Ramda.range(0, 200).map((n: number) => ({
+    x: random(0, MAX_X),
+    y: random(0, MAX_Y)
+  }));
 
 export class App extends React.PureComponent {
   public render() {
@@ -84,24 +101,22 @@ export class App extends React.PureComponent {
   );
 
   private content = () => {
-    const randomPoints = Ramda.range(0, 200).map((n: number) => ({
-      x: random(0, MAX_X),
-      y: random(0, MAX_Y)
-    }));
+    const randomPoints = generatePoints();
 
     const randomWeights = {
       x: random(-1, 1),
       y: random(-1, 1)
     };
 
-    const trainedWeights = [
-      { x: 721, y: 432 },
-      { x: 211, y: 122 },
-      { x: 328, y: 833 },
-      { x: 900, y: 400 }
-    ].reduce((w: Point, p: Point) => {
-      return train(w, p, team(p));
-    }, randomWeights);
+    const examples = generatePoints().map(point => ({
+      point,
+      team: team(point)
+    }));
+
+    const trainedWeights = examples.reduce(
+      (w: Point, ex: Example) => train(w, ex.point, ex.team),
+      randomWeights
+    );
 
     Rx.Observable.of(trainedWeights).subscribe((p: Point) => console.log(p));
 
